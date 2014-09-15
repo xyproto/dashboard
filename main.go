@@ -36,7 +36,7 @@ func main() {
 			"statuscolor":    "#a0a0ff",
 		}
 
-		// Reload template
+		// !! Reload template !!
 		r = render.New(render.Options{})
 
 		// Render and return
