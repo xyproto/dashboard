@@ -116,12 +116,15 @@ func main() {
 		fmt.Fprintf(w, "Permission denied!")
 	})
 
+	// Activate the permission middleware
+
 	n.Use(perm)
 
-	// Share the files in static
-	n.Use(negroni.NewStatic(http.Dir("static")))
+	// Already included in negroni.Classic:
+	//// Share the files in static
+	//n.Use(negroni.NewStatic(http.Dir("static")))
 
 	n.UseHandler(mux)
 
-	n.Run(":3003")
+	n.Run(":3000")
 }
