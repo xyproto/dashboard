@@ -1,0 +1,17 @@
+    <div id="menu">
+      <div class="pure-menu pure-menu-open">
+        <a class="pure-menu-heading" href="#">{{.Title}}</a>
+        <ul>
+	  {{range .MenuItems}}
+	  {{if .Selected}}
+          <li class="menu-item-divided pure-menu-selected">
+	  {{else}}
+	  <li>
+	  {{end}}
+            <a href="{{.Url}}">{{.Text}}</a>
+	  </li>
+	  {{end}}
+        </ul>
+      </div>
+    </div>
+

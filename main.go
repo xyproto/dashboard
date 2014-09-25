@@ -99,7 +99,7 @@ func main() {
 		page.Menu = GenerateMenu(0)
 
 		// !! Reload template !!
-		r = render.New(render.Options{})
+		//r = render.New(render.Options{})
 
 		// Render the specified templates/.tmpl file as HTML and return
 		r.HTML(w, http.StatusOK, "dashboard", page)
@@ -117,7 +117,7 @@ func main() {
 		page.Menu = GenerateMenu(1)
 
 		// !! Reload template !!
-		r = render.New(render.Options{})
+		//r = render.New(render.Options{})
 
 		// Render the specified templates/.tmpl file as HTML and return
 		r.HTML(w, http.StatusOK, "mirrors", page)

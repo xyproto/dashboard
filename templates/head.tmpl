@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="{{.Text.description}}">
+  <title>{{.Text.title}}</title>
+  <!--<link rel="stylesheet" href="http://yui.yahooapis.com/pure/pure.css">-->
+  <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/pure-min.css">
+  <!--[if lte IE 8]>
+    <link rel="stylesheet" href="css/layouts/side-menu-old-ie.css">
+  <![endif]-->
+  <!--[if gt IE 8]><!-->
+    <link rel="stylesheet" href="css/layouts/side-menu.css">
+  <!--<![endif]-->
+   
+  <!-- charts -->
+  <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+
+</head>
+<body>
+  <div id="layout">
+    <!-- Menu toggle -->
+    <a href="#menu" id="menuLink" class="menu-link">
+        <!-- Hamburger icon -->
+        <span></span>
+    </a>
+    {{template "menu" .Menu}}
+    <div id="main">
+      <div class="header">
+        <h1>{{.Text.title}}</h1>
+        <h2>{{.Text.subtitle}}</h2>
+      </div>
+      <div class="content">
+
