@@ -78,7 +78,7 @@ func GenerateMenu(active int) Menu {
 }
 
 func main() {
-	fmt.Println("dashboard ", Version)
+	fmt.Println("bumpfriend ", Version)
 
 	r := render.New(render.Options{})
 
@@ -90,9 +90,8 @@ func main() {
 	m.Get("/", func(w http.ResponseWriter, req *http.Request) {
 		var page PageData
 		page.Text = map[string]string{
-			"description": "Dashboard",
-			"title":       "Dashboard",
-			"subtitle":    "Charts and graphs",
+			"title":    "Bumpfriend",
+			"subtitle": "Admin panel",
 		}
 
 		// Generate a menu where item 0 is active
@@ -102,15 +101,14 @@ func main() {
 		//r = render.New(render.Options{})
 
 		// Render the specified templates/.tmpl file as HTML and return
-		r.HTML(w, http.StatusOK, "dashboard", page)
+		r.HTML(w, http.StatusOK, "bumpfriend", page)
 	})
 
 	m.Get("/mirrors", func(w http.ResponseWriter, req *http.Request) {
 		var page PageData
 		page.Text = map[string]string{
-			"description": "Mirrors",
-			"title":       "Mirrors",
-			"subtitle":    "Mirror mirror on the wall",
+			"title":    "Mirrors",
+			"subtitle": "List of mirrors",
 		}
 
 		// Generate a menu where item 1 is active

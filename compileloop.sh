@@ -3,7 +3,7 @@ SOURCE=
 for f in *.go ../onthefly/*.go ../genericsite/*.go ../instapage/*.go ../simpleredis/*.go ../siteengines/*.go ../moskus/*.go ../webhandle/*.go; do
   SOURCE+="$f "
 done
-BIN=dashboard
+BIN=bumpfriend
 PIDFILE=/tmp/$BIN.pid
 LOG=errors.err
 M5=nop
