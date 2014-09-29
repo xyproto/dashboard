@@ -43,14 +43,14 @@ func GenerateMenu(active int) Menu {
 
 	var menuitem1 MenuItem
 	menuitem1.Url = "/"
-	menuitem1.Text = "Dashboard"
+	menuitem1.Text = "Hi"
 	if active == 0 {
 		menuitem1.Selected = true
 	}
 
 	var menuitem2 MenuItem
-	menuitem2.Url = "/mirrors"
-	menuitem2.Text = "Mirrors"
+	menuitem2.Url = "/admin"
+	menuitem2.Text = "Admin"
 	if active == 1 {
 		menuitem2.Selected = true
 	}
@@ -63,8 +63,8 @@ func GenerateMenu(active int) Menu {
 	}
 
 	var menuitem4 MenuItem
-	menuitem4.Url = "/wiki"
-	menuitem4.Text = "Wiki"
+	menuitem4.Url = "/logout"
+	menuitem4.Text = "Logout"
 	if active == 3 {
 		menuitem4.Selected = true
 	}
@@ -85,9 +85,37 @@ func main() {
 	m := martini.Classic()
 
 	fizz := fizz.New()
+	userstate := fizz.UserState()
 
-	// Dashboard
-	m.Get("/", func(w http.ResponseWriter, req *http.Request) {
+	m.Get("/register/:password", func(params martini.Params) string {
+		if userstate.HasUser("admin") {
+			return "Admin user already exists"
+		}
+		userstate.AddUser("admin", params["password"], "")
+		userstate.SetAdminStatus("admin")
+		return fmt.Sprintf("Admin user was created: %v\n", userstate.HasUser("admin"))
+	})
+
+	m.Get("/login/:password", func(w http.ResponseWriter, req *http.Request, params martini.Params) string {
+		if userstate.CorrectPassword("admin", params["password"]) {
+			userstate.Login(w, "admin")
+			return "Wrong password"
+		}
+		return fmt.Sprintf("Logged in as administrator: %v\n", userstate.AdminRights(req))
+	})
+
+	m.Get("/logout", func(w http.ResponseWriter) string {
+		userstate.Logout("admin")
+		return "Logged out"
+	})
+
+	// Public page
+	m.Get("/", func() string {
+		return "hi"
+	})
+
+	// Admin panel
+	m.Get("/admin", func(w http.ResponseWriter, req *http.Request) {
 		var page PageData
 		page.Text = map[string]string{
 			"title":    "Bumpfriend",
@@ -101,7 +129,7 @@ func main() {
 		//r = render.New(render.Options{})
 
 		// Render the specified templates/.tmpl file as HTML and return
-		r.HTML(w, http.StatusOK, "bumpfriend", page)
+		r.HTML(w, http.StatusOK, "admin", page)
 	})
 
 	m.Get("/mirrors", func(w http.ResponseWriter, req *http.Request) {
@@ -121,7 +149,8 @@ func main() {
 		r.HTML(w, http.StatusOK, "mirrors", page)
 	})
 
-	// TODO: Admin panel with simple user management
+	// Rest
+	Rest(m, fizz.Perm())
 
 	// Activate the permission middleware
 	m.Use(fizz.All())
