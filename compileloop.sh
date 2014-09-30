@@ -1,9 +1,10 @@
 #!/bin/sh
+export PORT=3007
 SOURCE=
 for f in *.go ../onthefly/*.go ../genericsite/*.go ../instapage/*.go ../simpleredis/*.go ../siteengines/*.go ../moskus/*.go ../webhandle/*.go; do
   SOURCE+="$f "
 done
-BIN=bumpfriend
+BIN=api
 PIDFILE=/tmp/$BIN.pid
 LOG=errors.err
 M5=nop
@@ -30,7 +31,7 @@ while true; do
     clear
     date
     echo
-    echo -n 'Recompiling Dashboard...'
+    echo -n 'Recompiling API server...'
     [ -e $LOG ] && rm $LOG
     go build -o $BIN > $LOG
     if [ "$(wc -c $LOG | cut -d' ' -f1)" == '0' ]; then
@@ -49,7 +50,7 @@ while true; do
     fi
     cp "./$BIN" "/tmp/$BIN"
     echo 'Starting server'
-    ./$BIN &
+    PORT=$PORT ./$BIN &
     echo 'Writing pid'
     pgrep $BIN > $PIDFILE
   fi
