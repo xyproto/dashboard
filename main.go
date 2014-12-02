@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/go-martini/martini"
+	"github.com/Unknwon/macaron"
 	"github.com/unrolled/render"
-	"github.com/xyproto/fizz"
+	"github.com/xyproto/permissions2"
 )
 
 const (
@@ -81,13 +81,31 @@ func main() {
 	fmt.Println("dashboard ", Version)
 
 	r := render.New(render.Options{})
+	m := macaron.Classic()
 
-	m := martini.Classic()
+	perm := permissions.New()
 
-	fizz := fizz.New()
+    // Set up a middleware handler for Macaron, with a custom "permission denied" message.
+    permissionHandler := func(ctx *macaron.Context) {
+        // Check if the user has the right admin/user rights
+        if perm.Rejected(ctx.Resp, ctx.Req.Request) {
+            fmt.Fprintf(ctx.Resp, "Permission denied!")
+            // Deny the request
+            ctx.Error(http.StatusForbidden)
+            // Don't call other middleware handlers
+            return
+        }
+        // Call the next middleware handler
+        ctx.Next()
+    }
+
+    m.Use(macaron.Logger())
+    m.Use(permissionHandler)
+    m.Use(macaron.Gziper())
+    m.Use(macaron.Static("public"))
 
 	// Dashboard
-	m.Get("/", func(w http.ResponseWriter, req *http.Request) {
+	m.Get("/", func(ctx *macaron.Context) {
 		var page PageData
 		page.Text = map[string]string{
 			"description": "Dashboard",
@@ -99,13 +117,13 @@ func main() {
 		page.Menu = GenerateMenu(0)
 
 		// !! Reload template !!
-		//r = render.New(render.Options{})
+		r = render.New(render.Options{})
 
 		// Render the specified templates/.tmpl file as HTML and return
-		r.HTML(w, http.StatusOK, "dashboard", page)
+		r.HTML(ctx.Resp, http.StatusOK, "dashboard", page)
 	})
 
-	m.Get("/mirrors", func(w http.ResponseWriter, req *http.Request) {
+	m.Get("/mirrors", func(ctx *macaron.Context) {
 		var page PageData
 		page.Text = map[string]string{
 			"description": "Mirrors",
@@ -120,16 +138,14 @@ func main() {
 		//r = render.New(render.Options{})
 
 		// Render the specified templates/.tmpl file as HTML and return
-		r.HTML(w, http.StatusOK, "mirrors", page)
+		r.HTML(ctx.Resp, http.StatusOK, "mirrors", page)
 	})
 
 	// TODO: Admin panel with simple user management
 
-	// Activate the permission middleware
-	m.Use(fizz.All())
+    // Recovery middleware goes last
+    m.Use(macaron.Recovery())
 
-	// Share the files in static
-	m.Use(martini.Static("static"))
-
-	m.Run() // port 3000 by default
+	// Serve
+	m.Run(3000)
 }
