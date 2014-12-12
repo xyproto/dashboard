@@ -28,3 +28,7 @@ _testmain.go
 
 # NFS "#¤%&¤%
 .nfs*
+
+dashboard
+dump.rdb
+errors.err
