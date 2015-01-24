@@ -25,10 +25,14 @@ _testmain.go
 
 # Editor leftovers
 *~
+*.swp
 
 # NFS "#¤%&¤%
 .nfs*
 
+# Binaries
 dashboard
+
+# Dumps and logs
 dump.rdb
 errors.err
