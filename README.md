@@ -25,6 +25,3 @@ General information
 * License: MIT
 * Alexander F Rødseth
 
-
-![Mobile](https://raw.githubusercontent.com/xyproto/dashboard/master/screenshots/mobile.png)
-
