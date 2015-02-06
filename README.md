@@ -1,9 +1,8 @@
 #Dashboard [![Build Status](https://travis-ci.org/xyproto/dashboard.svg?branch=master)](https://travis-ci.org/xyproto/dashboard) [![GoDoc](https://godoc.org/github.com/xyproto/dashboard?status.svg)](http://godoc.org/github.com/xyproto/dashboard)
 
+![Desktop](https://raw.githubusercontent.com/xyproto/dashboard/master/screenshots/desktop.png)
+
 Simple dashboard web application skeleton.
-
-![Mobile](https://raw.githubusercontent.com/xyproto/dashboard/master/screenshots/mobile.png)
-
 
 Using
 -----
@@ -19,15 +18,13 @@ And:
 
 This works reasonably well, but in the future negroni or gin will probably be chosen over martini, boostrap over pure and a more lightweight library than Google Charts for charts. Other than that, the current choices are viable.
 
-Screenshot
-----------
-
-![Desktop](https://raw.githubusercontent.com/xyproto/dashboard/master/screenshots/desktop.png)
-
 General information
 -------------------
 
 * Version: 0.1
 * License: MIT
 * Alexander F Rødseth
+
+
+![Mobile](https://raw.githubusercontent.com/xyproto/dashboard/master/screenshots/mobile.png)
 
