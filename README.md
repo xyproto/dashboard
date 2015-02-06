@@ -19,7 +19,6 @@ This works reasonably well, but in the future I think I'll negroni or gin over m
 Screenshots
 -----------
 
-![Desktop](https://github.com/xyproto/dashboard/screenshots/desktop.png)
-
-![Mobile](https://github.com/xyproto/dashboard/screenshots/mobile.png)
+![Desktop](https://raw.githubusercontent.com/xyproto/dashboard/master/screenshots/desktop.png)
+![Mobile](https://raw.githubusercontent.com/xyproto/dashboard/master/screenshots/mobile.png)
 
