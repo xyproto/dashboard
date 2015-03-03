@@ -18,6 +18,11 @@ And:
 
 This works reasonably well, but in the future negroni or gin will probably be chosen over martini, boostrap over pure and a more lightweight library than Google Charts for the charts. Other than that, the current choices are viable.
 
+TODO
+----
+
+* Look at https://github.com/oal/admin for inspiration
+
 General information
 -------------------
 
