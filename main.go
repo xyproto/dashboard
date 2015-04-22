@@ -6,7 +6,7 @@ import (
 
 	"github.com/go-martini/martini"
 	"github.com/unrolled/render"
-	"github.com/xyproto/fizz"
+	"github.com/xyproto/permissions2"
 )
 
 const (
@@ -84,7 +84,7 @@ func main() {
 
 	m := martini.Classic()
 
-	fizz := fizz.New()
+	perm := permissions.New()
 
 	// Dashboard
 	m.Get("/", func(w http.ResponseWriter, req *http.Request) {
@@ -125,8 +125,21 @@ func main() {
 
 	// TODO: Admin panel with simple user management
 
-	// Activate the permission middleware
-	m.Use(fizz.All())
+	// Set up a middleware handler for Martini, with a custom "permission denied" message.
+	permissionHandler := func(w http.ResponseWriter, req *http.Request, c martini.Context) {
+		// Check if the user has the right admin/user rights
+		if perm.Rejected(w, req) {
+			// Deny the request
+			http.Error(w, "Permission denied!", http.StatusForbidden)
+			// Reject the request by not calling the next handler below
+			return
+		}
+		// Call the next middleware handler
+		c.Next()
+	}
+
+	// Enable the permissions middleware
+	m.Use(permissionHandler)
 
 	// Share the files in static
 	m.Use(martini.Static("static"))
