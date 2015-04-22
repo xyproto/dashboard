@@ -1,6 +1,6 @@
 #!/bin/sh
 SOURCE=
-for f in *.go ../onthefly/*.go ../genericsite/*.go ../instapage/*.go ../simpleredis/*.go ../siteengines/*.go ../moskus/*.go ../webhandle/*.go; do
+for f in *.go ../onthefly/*.go ../genericsite/*.go ../simpleredis/*.go ../siteengines/*.go ../moskus/*.go ../webhandle/*.go; do
   SOURCE+="$f "
 done
 BIN=dashboard
