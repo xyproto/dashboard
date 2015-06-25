@@ -5,8 +5,10 @@ import (
 	"net/http"
 
 	"github.com/go-martini/martini"
-	"github.com/unrolled/render"
+	"github.com/martini-contrib/render"
 	"github.com/xyproto/fizz"
+	"github.com/martini-contrib/auth"
+
 )
 
 const (
@@ -80,21 +82,15 @@ func GenerateMenu(active int) Menu {
 func main() {
 	fmt.Println("bumpfriend ", Version)
 
-	r := render.New(render.Options{})
+	r := render.Renderer(render.Options{})
 
 	m := martini.Classic()
 
-	fizz := fizz.New()
-	userstate := fizz.UserState()
+    m.Use(r)
 
-	m.Get("/register/:password", func(params martini.Params) string {
-		if userstate.HasUser("admin") {
-			return "Admin user already exists"
-		}
-		userstate.AddUser("admin", params["password"], "")
-		userstate.SetAdminStatus("admin")
-		return fmt.Sprintf("Admin user was created: %v\n", userstate.HasUser("admin"))
-	})
+	fizz := fizz.NewWithRedisConf(7, "")
+	userstate := fizz.UserState()
+	perm := fizz.Perm()
 
 	m.Get("/login/:password", func(w http.ResponseWriter, req *http.Request, params martini.Params) string {
 		if userstate.CorrectPassword("admin", params["password"]) {
@@ -105,7 +101,6 @@ func main() {
 	})
 
 	m.Get("/logout", func(w http.ResponseWriter) string {
-		userstate.Logout("admin")
 		return "Logged out"
 	})
 
@@ -115,7 +110,7 @@ func main() {
 	})
 
 	// Admin panel
-	m.Get("/admin", func(w http.ResponseWriter, req *http.Request) {
+	m.Get("/admin", func(r render.Render) {
 		var page PageData
 		page.Text = map[string]string{
 			"title":    "Bumpfriend",
@@ -129,10 +124,105 @@ func main() {
 		//r = render.New(render.Options{})
 
 		// Render the specified templates/.tmpl file as HTML and return
-		r.HTML(w, http.StatusOK, "admin", page)
+		r.HTML(http.StatusOK, "admin", page)
 	})
 
-	m.Get("/mirrors", func(w http.ResponseWriter, req *http.Request) {
+	// For testing the API
+	perm.AddPublicPath("/api/1.0/")
+	m.Post("/api/1.0/", func(r render.Render) {
+		r.JSON(200, map[string]interface{}{"hello": "fjaselus"})
+	})
+
+	m.Get("/api/1.0/", func(r render.Render) {
+		r.JSON(200, map[string]interface{}{"hello": "dolly"})
+	})
+
+	// For adding users
+	m.Post("/api/1.0/create/:username/:password", func(params martini.Params, r render.Render) {
+		username := params["username"]
+		password := params["password"]
+		if userstate.HasUser(username) {
+			r.JSON(200, map[string]interface{}{"error": "user " + username + " already exists"})
+			return
+		}
+		userstate.AddUser(username, password, "")
+		if userstate.HasUser(username) {
+			r.JSON(200, map[string]interface{}{"create": "true"})
+		} else {
+			r.JSON(200, map[string]interface{}{"error": "user " + username + " was not created"})
+		}
+	})
+
+	// For logging in
+	m.Post("/api/1.0/login/:username/:password", func(w http.ResponseWriter, params martini.Params, r render.Render) {
+		username := params["username"]
+		password := params["password"]
+		if userstate.CorrectPassword(username, password) {
+			userstate.SetLoggedIn(username)
+		}
+		if !userstate.IsLoggedIn(username) {
+			r.JSON(200, map[string]interface{}{"error": "could not log in " + username})
+			return
+		}
+		r.JSON(200, map[string]interface{}{"login": "true"})
+	})
+
+	// For logging out
+	m.Post("/api/1.0/logout/:username", func(params martini.Params, r render.Render) {
+		username := params["username"]
+		userstate.Logout(username)
+		if userstate.IsLoggedIn(username) {
+			r.JSON(200, map[string]interface{}{"error": "user " + username + " is still logged in!"})
+			return
+		}
+		r.JSON(200, map[string]interface{}{"logout": "true"})
+	})
+
+	// For login status
+	m.Post("/api/1.0/status/:username", func(params martini.Params, r render.Render) {
+		username := params["username"]
+		if userstate.IsLoggedIn(username) {
+			r.JSON(200, map[string]interface{}{"login": "true"})
+		} else {
+			r.JSON(200, map[string]interface{}{"login": "false"})
+		}
+	})
+
+	// Score POST og GET + timestamp
+	m.Post("/api/1.0/score/:username/:score", func(params martini.Params, r render.Render) {
+		username := params["username"]
+		score := params["score"]
+
+		if !userstate.HasUser(username) {
+			r.JSON(200, map[string]interface{}{"error": "no such user " + username})
+			return
+		}
+
+		users := userstate.GetUsers()
+		users.Set(username, "score", score)
+
+		r.JSON(200, map[string]interface{}{"score set": "true"})
+	})
+	m.Get("/api/1.0/score/:username", func(params martini.Params, r render.Render) {
+		username := params["username"]
+
+		if !userstate.HasUser(username) {
+			r.JSON(200, map[string]interface{}{"error": "no such user " + username})
+			return
+		}
+
+		users := userstate.GetUsers()
+		score, err := users.Get(username, "score")
+		if err != nil {
+			r.JSON(200, map[string]interface{}{"error": "could not get score for " + username})
+			return
+		}
+
+		r.JSON(200, map[string]interface{}{"score": score})
+	})
+
+
+	m.Get("/mirrors", func(r render.Render) {
 		var page PageData
 		page.Text = map[string]string{
 			"title":    "Mirrors",
@@ -146,7 +236,7 @@ func main() {
 		//r = render.New(render.Options{})
 
 		// Render the specified templates/.tmpl file as HTML and return
-		r.HTML(w, http.StatusOK, "mirrors", page)
+		r.HTML(http.StatusOK, "mirrors", page)
 	})
 
 	// Rest
@@ -157,6 +247,12 @@ func main() {
 
 	// Share the files in static
 	m.Use(martini.Static("static"))
+
+	// HTTP Basic Auth
+	m.Use(auth.BasicFunc(func(username, password string) bool {
+
+		return auth.SecureCompare(username, "admin") && auth.SecureCompare(password, "testfest")
+	}))
 
 	m.Run() // port 3000 by default
 }
