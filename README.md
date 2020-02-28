@@ -1,4 +1,4 @@
-#Dashboard [![Build Status](https://travis-ci.org/xyproto/dashboard.svg?branch=master)](https://travis-ci.org/xyproto/dashboard) [![GoDoc](https://godoc.org/github.com/xyproto/dashboard?status.svg)](http://godoc.org/github.com/xyproto/dashboard)
+# Dashboard [![Build Status](https://travis-ci.com/xyproto/dashboard.svg?branch=master)](https://travis-ci.com/xyproto/dashboard) [![GoDoc](https://godoc.org/github.com/xyproto/dashboard?status.svg)](http://godoc.org/github.com/xyproto/dashboard)
 
 ![Desktop](https://raw.githubusercontent.com/xyproto/dashboard/master/screenshots/desktop.png)
 
@@ -28,5 +28,4 @@ General information
 
 * Version: 0.1
 * License: MIT
-* Alexander F Rødseth
-
+* Alexander F. Rødseth
